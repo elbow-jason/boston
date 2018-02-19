@@ -29,10 +29,10 @@ type DataEntry struct {
 	RawLabels []float64 `json:"labels"`
 }
 
-// Validate ensures an entry does not contain empty values
-func (d DataEntry) Validate(expectedInputsSize, expectedLabelsSize int) error {
-	inputsSize := len(d.RawInputs)
-	labelsSize := len(d.RawLabels)
+// ValidateDataEntry ensures an entry does not contain empty values
+func ValidateDataEntry(entry DataEntry, expectedInputsSize, expectedLabelsSize int) error {
+	inputsSize := len(entry.RawInputs)
+	labelsSize := len(entry.RawLabels)
 	if inputsSize == 0 {
 		return errorEmptyInputs
 	}

@@ -3,6 +3,8 @@ package learner
 import (
 	"boston/neural"
 	"fmt"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 // Learner is the Actor for applying actions to
@@ -44,35 +46,87 @@ func (l *Learner) WaitForSignal() {
 	}
 }
 
+func inputsToMatrix(inputs [][]float64, inputsSize int) *mat.Dense {
+	rows := len(inputs)
+	var grouped []float64
+	for _, input := range inputs {
+		grouped = append(grouped, input...)
+	}
+	return mat.NewDense(rows, inputsSize, grouped)
+}
+
+// MatrixToOutputs transforms a matrix into a
+// slice of a slice of float64s
+func MatrixToOutputs(matrix *mat.Dense) [][]float64 {
+	rows, cols := matrix.Dims()
+	outputs := make([][]float64, rows)
+	for i := 0; i < rows; i++ {
+		rowSlice := make([]float64, cols)
+		for j := 0; j < cols; j++ {
+			rowSlice[j] = matrix.At(i, j)
+		}
+		outputs[i] = rowSlice
+	}
+	return outputs
+}
+
 func handlePredict(l *Learner, action Action) {
 	fmt.Println("handlePredict", l.Name)
-	inputs := action.Payload().([][]float64)
-	outputs := [][]float64
+	payload := action.Payload().(PredictPayload)
+	matrix := inputsToMatrix(payload.Inputs, payload.InputsSize)
+	predictions, err := l.Network.Predict(matrix)
+	if err != nil {
+		action.Failure(err)
+		return
+	}
+	action.Success(predictions)
 }
 
 func handleTrain(l *Learner, action Action) {
 	fmt.Println("handleTrain before", l.Name, l.Network.IsTrained)
-	entries := action.Payload().([]DataEntry)
-	inputs, labels := DataEntriesToMatrices(entries)
-	err := l.Network.Train(inputs, labels)
-	if err != nil {
-		action.Failure(err)
+	payload := action.Payload().(TrainPayload)
+	if payload.TestSplit > 0.0 {
+		trains, tests := applyTrainTestSplit(payload)
+		trainInputs, trainLabels := DataEntriesToMatrices(trains)
+		err := l.Network.Train(trainInputs, trainLabels)
+		if err != nil {
+			action.Failure(err)
+			return
+		}
+		testInputs, testLabels := DataEntriesToMatrices(tests)
+		accuracy := l.Network.TestAccuracy(testInputs, testLabels)
+		result := TrainResult{
+			Accuracy: accuracy,
+			Tested:   true,
+		}
+		action.SuccessCallback(result)
+	} else {
+		trainInputs, trainLabels := DataEntriesToMatrices(payload.DataEntries)
+		err := l.Network.Train(trainInputs, trainLabels)
+		if err != nil {
+			action.Failure(err)
+			return
+		}
+		result := TrainResult{
+			Accuracy: 0.0,
+			Tested:   false,
+		}
+		action.SuccessCallback(result)
 	}
-	fmt.Println("handleTrain after", l.Name, l.Network.IsTrained)
 }
 
 func handleReset(l *Learner, action Action) {
 	fmt.Println("handleReset", l.Name)
 	l.Network.Reset()
-	action.Success()
+	action.Success(nil)
 }
 
 func handleCreate(l *Learner, action Action) {
 	fmt.Println("handleCreate", l.Name)
-	action.Success()
+	action.Success(nil)
 }
 
 func handleDelete(l *Learner, action Action) {
 	fmt.Println("handleDelete", l.Name)
-	action.Success()
+	action.Success(nil)
 }

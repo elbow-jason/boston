@@ -3,16 +3,17 @@ package main
 import (
 	"boston/learner"
 	"boston/neural"
+	"boston/server"
 	"log"
 )
 
 func main() {
 
-	action, err := learner.NewCreateAction("jason", 10, 4, 4, 5000, 0.1)
+	action, err := learner.NewCreatePayload("jason", 10, 4, 4, 5000, 0.1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	learnerMap := NewLearnerMap()
+	learnerMap := learner.NewMap()
 	config := neural.NetworkConfig{
 		InputNeurons:  action.InputNeurons,
 		HiddenNeurons: action.HiddenNeurons,
@@ -23,7 +24,7 @@ func main() {
 	learnerMap.StartLearner("jason", config)
 	// learnerMap.SendAction("jason", action)
 	// runPrediction()
-	startHTTPServer(&learnerMap)
+	server.StartLearnerHTTPServer(&learnerMap)
 }
 
 // func runPrediction() {

@@ -1,7 +1,8 @@
-package main
+package learner
 
 import (
-	"boston/learner"
+	// "boston/learner"
+	// "boston/learner"
 	"boston/neural"
 	"errors"
 	"fmt"
@@ -13,55 +14,55 @@ var (
 	errorLearnerAlreadyExists = errors.New("Learner Already Exists")
 )
 
-// LearnerMap .
-type LearnerMap struct {
+// Map .
+type Map struct {
 	sync.Mutex
-	learners map[string]LearnerParams
+	learners map[string]Params
 }
 
-// LearnerParams .
-type LearnerParams struct {
+// Params .
+type Params struct {
 	neural.NetworkConfig
-	Mailbox chan learner.Action
+	Mailbox chan Action
 }
 
-// NewLearnerMap .
-func NewLearnerMap() LearnerMap {
-	return LearnerMap{
-		learners: make(map[string]LearnerParams),
+// NewMap .
+func NewMap() Map {
+	return Map{
+		learners: make(map[string]Params),
 	}
 }
 
 // StartLearner puts a new learner in the map or
 // if a learner with that
-func (lmap *LearnerMap) StartLearner(name string, config neural.NetworkConfig) error {
+func (lmap *Map) StartLearner(name string, config neural.NetworkConfig) error {
 	lmap.Lock()
 	defer lmap.Unlock()
 	_, ok := lmap.learners[name]
 	if ok {
 		return errorLearnerAlreadyExists
 	}
-	newLearner := learner.NewLearner(name, config)
+	newLearner := NewLearner(name, config)
 	go newLearner.WaitForSignal()
-	newLearnParams := LearnerParams{
+	newParams := Params{
 		NetworkConfig: config,
 		Mailbox:       newLearner.Mailbox,
 	}
-	lmap.learners[name] = newLearnParams
+	lmap.learners[name] = newParams
 	return nil
 }
 
 // SendAction .
-func (lmap *LearnerMap) SendAction(action learner.Action) error {
-	name := action.LearnerName()
+func (lmap *Map) SendAction(action Action) error {
+	name := action.Name()
 	lmap.Lock()
 	defer lmap.Unlock()
 	learnerParams, ok := lmap.learners[name]
 	if !ok {
 		return errorNoSuchLearner
 	}
-	if action.Signal() == learner.DeleteSignal {
-		fmt.Println("deleting", action.LearnerName(), "from learners map")
+	if action.Signal() == DeleteSignal {
+		fmt.Println("deleting", action.Name(), "from learners map")
 		delete(lmap.learners, name)
 	}
 	learnerParams.Mailbox <- action
@@ -69,7 +70,7 @@ func (lmap *LearnerMap) SendAction(action learner.Action) error {
 }
 
 // GetConfig returns the config for a
-func (lmap *LearnerMap) GetConfig(name string) (neural.NetworkConfig, error) {
+func (lmap *Map) GetConfig(name string) (neural.NetworkConfig, error) {
 	lmap.Lock()
 	defer lmap.Unlock()
 	params, ok := lmap.learners[name]
@@ -80,7 +81,7 @@ func (lmap *LearnerMap) GetConfig(name string) (neural.NetworkConfig, error) {
 }
 
 // Keys returns the current keys of learners
-func (lmap *LearnerMap) Keys() []string {
+func (lmap *Map) Keys() []string {
 	lmap.Lock()
 	defer lmap.Unlock()
 	keys := make([]string, 0, len(lmap.learners))
