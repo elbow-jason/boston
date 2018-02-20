@@ -62,7 +62,7 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 	```json
 	{
-		"name": "jason",
+		"name": "example",
 		"inputs": [
 			[1.0, 0.0, 0.50, 1.0, 0.0, 0.98, 1.0, 0.0, 0.98, 0.3]
 		]
@@ -73,7 +73,7 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 	```json
 	{
-		"name": "jason"
+		"name": "example"
 	}
 	```
 
@@ -81,7 +81,7 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 	```json
 	{
-		"name": "jason"
+		"name": "example"
 	}
 	```
 
