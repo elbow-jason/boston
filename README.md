@@ -8,7 +8,7 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 ## Usage
 
-Note: the entire Full Example JSON below can be `POST` in place of each of the payloads.
+Note: the entire Full Example JSON below can be `POST`ed in place of each of the payloads.
 
 Note: I have a nanobox deployed DigitalOcean 1Gb server running at `http://192.241.205.72:4343` feel free to mess around.
 
