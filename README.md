@@ -6,7 +6,6 @@ Each neural network runs safely in it's own goroutine.
 
 Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
-
 ## Usage
 
 Note: the entire Full Example JSON below can be `POST` in place of each of the payloads.
