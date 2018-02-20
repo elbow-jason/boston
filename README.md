@@ -9,13 +9,14 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 ## Usage
 
+Note: the entire Full Example JSON below can be `POST` in place of each of the payloads.
+
 1. To create a neural network `POST` the payload below to `http://localhost:4343/learners/create`:
 
 	```json
 	{
 		"name": "example",
 		"learning_rate": 0.1,
-		"test_split": 0.3,
 		"input_neurons": 10,
 		"hidden_neurons": 4,
 		"output_neurons": 4,
