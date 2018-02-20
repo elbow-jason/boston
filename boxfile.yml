@@ -1,0 +1,13 @@
+run.config:
+  engine: golang
+  engine.config:
+    # Go Settings
+    runtime: go-1.9
+    package: 'github.com/elbow-jason/boston'
+    fetch: 'go get'
+    build: 'go build'
+
+web.main:
+  start: ./boston
+  ports:
+    - tcp:4343:4343

@@ -3,6 +3,7 @@ package server
 import (
 	"boston/learner"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -34,5 +35,6 @@ func StartLearnerHTTPServer(lmap *learner.Map, port string) {
 	router.HandleFunc("/learners/reset", handleResetRequest(lmap))
 	router.HandleFunc("/learners/train", handleTrainRequest(lmap))
 	router.HandleFunc("/learners/predict", handlePredictRequest(lmap))
+	fmt.Println("Starting Boston Learner Server on port", port)
 	log.Fatal(http.ListenAndServe(port, router))
 }
