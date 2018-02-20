@@ -10,7 +10,7 @@ Heavily based on http://www.datadan.io/building-a-neural-net-from-scratch-in-go/
 
 Note: the entire Full Example JSON below can be `POST` in place of each of the payloads.
 
-Note: I have a DO 1Gb server running at `http://192.241.205.72:4343` feel free to mess around.
+Note: I have a nanobox deployed DigitalOcean 1Gb server running at `http://192.241.205.72:4343` feel free to mess around.
 
 1. To create a neural network `POST` the payload below to `http://localhost:4343/learners/create`:
 
