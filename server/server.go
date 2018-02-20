@@ -26,7 +26,7 @@ func respondWithJSON(w http.ResponseWriter, jsonMap map[string]interface{}) {
 
 // StartLearnerHTTPServer starts the router associated with manipulating
 // a learner.Map and it's member learners
-func StartLearnerHTTPServer(lmap *learner.Map) {
+func StartLearnerHTTPServer(lmap *learner.Map, port string) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/learners/list", handleListRequest(lmap))
 	router.HandleFunc("/learners/create", handleCreateRequest(lmap))
@@ -34,5 +34,5 @@ func StartLearnerHTTPServer(lmap *learner.Map) {
 	router.HandleFunc("/learners/reset", handleResetRequest(lmap))
 	router.HandleFunc("/learners/train", handleTrainRequest(lmap))
 	router.HandleFunc("/learners/predict", handlePredictRequest(lmap))
-	log.Fatal(http.ListenAndServe(":4351", router))
+	log.Fatal(http.ListenAndServe(port, router))
 }
